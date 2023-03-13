@@ -13,8 +13,10 @@ ocp_application_validation_list:
     password:
     types:
       - kind: Route
-        name: 
-        namespace: 
+        name: openshift-gitops-server
+        namespace: openshift-gitops
+        retries:
+        delay: 
 
 
   - cluster_name: dev
