@@ -6,7 +6,7 @@
     api_key: "{{ _r_auth_cluster.k8s_auth.api_key }}"
     validate_certs: false
     kind: Route
-    name: "{{ _validate.name | default(omit) }"
+    name: "{{ _validate.name | default(omit) }}"
     namespace: "{{ _validate.namespace | default(omit) }}"
   register: _r_route
   retries: 60
