@@ -1,0 +1,9 @@
+---
+# Do not modify this file
+
+- name: Running Pre Workload Tasks
+  include_tasks:
+    file: ./pre_validation.yml
+    apply:
+      become: "{{ become_override | bool }}"
+  when: ACTION == "create" or ACTION == "provision"

@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  role_name: ocp_application_validation
+  author: Mitesh Sharma (mitsharm@redhat.com)
+  description: |
+    applicatioin validation
+  license: GPLv3
+  min_ansible_version: "2.9"
+  platforms: []
+  galaxy_tags:
+  - openshift
+dependencies: []

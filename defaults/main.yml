@@ -1,0 +1,7 @@
+---
+become_override: false
+ocp_username: user-redhat.com
+silent: false
+tmp_dir: /tmp/validation_contexts
+tmp_kubeconfig: "{{ tmp_dir }}/.kube/config"
+
