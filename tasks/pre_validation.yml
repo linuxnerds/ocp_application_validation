@@ -1,6 +1,6 @@
 ---
 
-- name: Log into cluster
+- name: Log into {{ _cluster.cluster_name }} cluster 
   k8s_auth:
     host: "{{ _cluster.host }}"
     username: "{{ _cluster.username }}"
