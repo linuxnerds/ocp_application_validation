@@ -12,15 +12,3 @@
   until:
   - _r_auth_cluster.k8s_auth.api_key is defined
 
-
-
-- name: Ensure directory exists
-  file:
-    path: "{{ tmp_dir }}"
-    state: directory
-
-# - name: Copy .kube/config and set env var
-#   copy:
-#     src: ~/.kube
-#     dest: "{{ tmp_dir }}"
-#     remote_src: true

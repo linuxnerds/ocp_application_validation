@@ -1,0 +1,20 @@
+---
+
+- name: Log into {{ _cluster.cluster_name }} cluster 
+  k8s_auth:
+    host: "{{ _cluster.host }}"
+    username: "{{ _cluster.username }}"
+    password: "{{ _cluster.password }}"
+    validate_certs: false
+  register: _r_auth_cluster
+  retries: 240
+  delay: 15
+  until:
+  - _r_auth_cluster.k8s_auth.api_key is defined
+
+- name: Running Pre Workload Tasks
+  when: _validate.name == "route"
+  include_tasks: ./validate_route.yml
+  loop: "{{ _cluster.types }}"
+  loop_control:
+    loop_var: _validate_route

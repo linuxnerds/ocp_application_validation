@@ -1,9 +1,16 @@
 ---
 # Do not modify this file
 
-- name: Running Pre Workload Tasks
+- name: Validate authentication
   when: _cluster.cluster_name is defined
-  include_tasks: ./pre_validation.yml
+  include_tasks: ./validate_auth.yml
+  loop: "{{ ocp_application_validation_list }}"
+  loop_control:
+    loop_var: _cluster
+
+- name: Running Pre Workload Tasks
+  when: _cluster.types is defined
+  include_tasks: ./validate_auth.yml
   loop: "{{ ocp_application_validation_list }}"
   loop_control:
     loop_var: _cluster
