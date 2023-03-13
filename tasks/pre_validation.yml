@@ -1,12 +1,27 @@
 ---
-# Implement your Pre Workload deployment tasks here
-- name: Ensure directory exists
-  file:
-    path: "{{ tmp_dir }}"
-    state: directory
 
-- name: Copy .kube/config and set env var
-  copy:
-    src: ~/.kube
-    dest: "{{ tmp_dir }}"
-    remote_src: true
+- name: Log into cluster
+  k8s_auth:
+    host: "{{ _cluster.host }}"
+    username: "{{ _cluster.username }}"
+    password: "{{ _cluster.password }}"
+    validate_certs: false
+  register: _r_auth_cluster
+  retries: 240
+  delay: 15
+  until:
+  - _r_auth_cluster.k8s_auth.api_key is defined
+
+
+
+# Implement your Pre Workload deployment tasks here
+# - name: Ensure directory exists
+#   file:
+#     path: "{{ tmp_dir }}"
+#     state: directory
+
+# - name: Copy .kube/config and set env var
+#   copy:
+#     src: ~/.kube
+#     dest: "{{ tmp_dir }}"
+#     remote_src: true

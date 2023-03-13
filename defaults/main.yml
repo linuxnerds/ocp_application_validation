@@ -5,3 +5,18 @@ silent: false
 tmp_dir: /tmp/validation_contexts
 tmp_kubeconfig: "{{ tmp_dir }}/.kube/config"
 
+
+ocp_application_validation_list:
+  - cluster: prod
+    host:
+    username:
+    password:
+    types:
+      - name: route
+
+  - cluster: dev
+    host:
+    username:
+    password:
+    types:
+      - name: route
