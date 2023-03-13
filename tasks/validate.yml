@@ -1,9 +1,9 @@
 ---
 - name: checking {{ _validate.name | d('') }} {{ _validate.kind }} is available
   k8s_info:
-    host: "{{ _r_auth_cluster.k8s_auth.host }}"
-    username: "{{ _r_auth_cluster.k8s_auth.username }}"
-    api_key: "{{ _r_auth_cluster.k8s_auth.api_key }}"
+    host: "{{ _r_auth_cluster.k8s_auth.host | default(omit) }}"
+    username: "{{ _r_auth_cluster.k8s_auth.username | default(omit) }}"
+    api_key: "{{ _r_auth_cluster.k8s_auth.api_key | default(omit) }}"
     validate_certs: false
     api_version: "{{ _validate.api_version| default(omit) }}"
     kind: "{{ _validate.kind }}"
@@ -12,7 +12,10 @@
   register: _r_validate
   retries: "{{ _validate.retries | default(60) }}"
   delay: "{{ _validate.delay | default(5) }}"
-  until: _r_validate.resources | length > 0
+  until: "{% if _validate.conditions is defined %}{{  _validate.conditions  }}
+           {% else %}_validate | length > 0{% endif %}"
+
+  
 
 
 
