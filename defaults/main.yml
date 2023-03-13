@@ -7,14 +7,14 @@ tmp_kubeconfig: "{{ tmp_dir }}/.kube/config"
 
 
 ocp_application_validation_list:
-  - cluster: prod
+  - cluster_name: prod
     host:
     username:
     password:
     types:
       - name: route
 
-  - cluster: dev
+  - cluster_name: dev
     host:
     username:
     password:
