@@ -1,5 +1,5 @@
 ---
-- name: checking {{ _validate.kind }} is available
+- name: checking {{ _validate.name | d('') }} {{ _validate.kind }} is available
   k8s_info:
     host: "{{ _r_auth_cluster.k8s_auth.host }}"
     username: "{{ _r_auth_cluster.k8s_auth.username }}"
