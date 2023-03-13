@@ -1,5 +1,5 @@
 ---
-- name: Find routes for apps
+- name: checking routes is available
   k8s_info:
     host: "{{ _r_auth_cluster.k8s_auth.host }}"
     username: "{{ _r_auth_cluster.k8s_auth.username }}"
@@ -9,8 +9,8 @@
     name: "{{ _validate.name | default(omit) }}"
     namespace: "{{ _validate.namespace | default(omit) }}"
   register: _r_route
-  retries: 60
-  delay: 5
+  retries: "{{ _validate.retries | default(60) }}"
+  delay: "{{ _validate.delay | default(5) }}"
   until: _r_route.resources | length > 0
 
 
