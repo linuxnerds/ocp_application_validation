@@ -14,11 +14,10 @@
 
 
 
-# Implement your Pre Workload deployment tasks here
-# - name: Ensure directory exists
-#   file:
-#     path: "{{ tmp_dir }}"
-#     state: directory
+- name: Ensure directory exists
+  file:
+    path: "{{ tmp_dir }}"
+    state: directory
 
 # - name: Copy .kube/config and set env var
 #   copy:
