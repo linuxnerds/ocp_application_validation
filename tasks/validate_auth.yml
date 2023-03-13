@@ -17,4 +17,4 @@
   include_tasks: ./validate_route.yml
   loop: "{{ _cluster.types }}"
   loop_control:
-    loop_var: _validate_route
+    loop_var: _validate
