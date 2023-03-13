@@ -1,14 +1,17 @@
 ---
-
-- name: Log into {{ _cluster.cluster_name }} cluster 
-  k8s_auth:
-    host: "{{ _cluster.host }}"
-    username: "{{ _cluster.username }}"
-    password: "{{ _cluster.password }}"
+- name: Find routes for apps
+  k8s_info:
+    host: "{{ _r_auth_cluster.k8s_auth.host }}"
+    username: "{{ _r_auth_cluster.k8s_auth.username }}"
+    api_key: "{{ _r_auth_cluster.k8s_auth.api_key }}"
     validate_certs: false
-  register: _r_auth_cluster
-  retries: 240
-  delay: 15
-  until:
-  - _r_auth_cluster.k8s_auth.api_key is defined
+    kind: Route
+    name: "{{ _validate.name | default(omit) }"
+    namespace: "{{ _validate.namespace | default(omit) }}"
+  register: _r_route
+  retries: 60
+  delay: 5
+  until: _r_route.resources | length > 0
+
+
 

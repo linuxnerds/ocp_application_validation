@@ -12,7 +12,10 @@ ocp_application_validation_list:
     username:
     password:
     types:
-      - name: route
+      - kind: Route
+        name: 
+        namespace: 
+
 
   - cluster_name: dev
     host:

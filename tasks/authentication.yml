@@ -13,7 +13,7 @@
   - _r_auth_cluster.k8s_auth.api_key is defined
 
 - name: Running Pre Workload Tasks
-  when: _validate.name == "route"
+  when: _validate.kind == "Route"
   include_tasks: ./validate_route.yml
   loop: "{{ _cluster.types }}"
   loop_control:
