@@ -5,6 +5,7 @@
     username: "{{ _r_auth_cluster.k8s_auth.username }}"
     api_key: "{{ _r_auth_cluster.k8s_auth.api_key }}"
     validate_certs: false
+    api_version: "{{ _validate.api_version| default(omit) }}"
     kind: "{{ _validate.kind }}"
     name: "{{ _validate.name | default(omit) }}"
     namespace: "{{ _validate.namespace | default(omit) }}"
