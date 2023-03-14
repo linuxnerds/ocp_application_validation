@@ -8,9 +8,9 @@
   block:
     - name: Log into {{ _login.cluster.host }} cluster 
       k8s_auth:
-        host: "{{ _login.host }}"
-        username: "{{ _login.username }}"
-        password: "{{ _login.password }}"
+        host: "{{ _login.cluster.host }}"
+        username: "{{ _login.cluster.username }}"
+        password: "{{ _login.cluster.password }}"
         validate_certs: false
       register: _r_auth_cluster
       retries: 240
