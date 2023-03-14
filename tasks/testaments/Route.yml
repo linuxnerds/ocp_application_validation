@@ -1,0 +1,23 @@
+---
+- name: checking {{ _validate.name | d('') }} {{ _validate.kind }} is available
+  k8s_info:
+    host: "{{ _ocp_application_validation_cluster_login_host | default(omit) }}"
+    username: "{{ _ocp_application_validation_cluster_login_username | default(omit) }}"
+    api_key: "{{ _ocp_application_validation_cluster_login_api_key | default(omit) }}"
+    validate_certs: false
+    api_version: "{{ _validate.api_version| default(omit) }}"
+    kind: Route
+    name: "{{ _validate.name | default(omit) }}"
+    namespace: "{{ _validate.namespace | default(omit) }}"
+  register: _r_validate_route
+  retries: "{{ _validate.retries | default(60) }}"
+  delay: "{{ _validate.delay | default(5) }}"
+  until: _r_validate_route.resources | length > 0
+
+  
+# _ocp4_workload_devsecops_validated_pattern_gitea_repo_globex_ui_url: >-
+#       {{ r_gitea.resources[0].spec.giteaSsl | bool | ternary( 'https', 'http' ) }}://{{
+#       ocp4_workload_devsecops_validated_pattern_gitea_username | urlencode }}:{{
+#       ocp4_workload_devsecops_validated_pattern_gitea_password | urlencode }}@{{
+#       r_gitea.resources[0].status.giteaHostname }}/{{
+#       ocp4_workload_devsecops_validated_pattern_gitea_username }}/globex-ui

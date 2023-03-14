@@ -1,0 +1,22 @@
+---
+- name: checking {{ _validate.name | d('') }} {{ _validate.kind }} is available
+  k8s_info:
+    host: "{{ _ocp_application_validation_cluster_login_host | default(omit) }}"
+    username: "{{ _ocp_application_validation_cluster_login_username | default(omit) }}"
+    api_key: "{{ _ocp_application_validation_cluster_login_api_key | default(omit) }}"
+    validate_certs: false
+    api_version: "{{ _validate.api_version| default(omit) }}"
+    kind: StorageCluster
+    name: "{{ _validate.name | default(omit) }}"
+    namespace: "{{ _validate.namespace | default(omit) }}"
+  register: _r_validate_storagecluster
+  retries: "{{ _validate.retries | default(60) }}"
+  delay: "{{ _validate.delay | default(5) }}"
+  until:
+    - _r_validate_storagecluster.resources | length > 0
+    - _r_validate_storagecluster.resources[0].status.phase == "Ready"   
+
+  
+
+
+

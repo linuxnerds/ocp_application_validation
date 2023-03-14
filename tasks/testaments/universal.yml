@@ -1,22 +1,15 @@
 ---
 - name: checking {{ _validate.name | d('') }} {{ _validate.kind }} is available
   k8s_info:
-    host: "{{ _r_auth_cluster.k8s_auth.host | default(omit) }}"
-    username: "{{ _r_auth_cluster.k8s_auth.username | default(omit) }}"
-    api_key: "{{ _r_auth_cluster.k8s_auth.api_key | default(omit) }}"
+    host: "{{ _ocp_application_validation_cluster_login_host | default(omit) }}"
+    username: "{{ _ocp_application_validation_cluster_login_username | default(omit) }}"
+    api_key: "{{ _ocp_application_validation_cluster_login_api_key | default(omit) }}"
     validate_certs: false
     api_version: "{{ _validate.api_version| default(omit) }}"
     kind: "{{ _validate.kind }}"
     name: "{{ _validate.name | default(omit) }}"
     namespace: "{{ _validate.namespace | default(omit) }}"
-  register: _r_validate
+  register: _r_validate_universal
   retries: "{{ _validate.retries | default(60) }}"
   delay: "{{ _validate.delay | default(5) }}"
-  until:
-    - _r_validate.resources | length > 0
-    - _r_validate.resources[0].status.phase == "Ready"   
-
-  
-
-
-
+  until: _r_validate_universal.resources | length > 0

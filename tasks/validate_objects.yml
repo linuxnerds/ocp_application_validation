@@ -1,0 +1,36 @@
+---
+- name: login to cluster
+  when:
+    - _login.cluster.host is defined
+    - _login.cluster.username is defined
+    - _login.cluster.password is defined
+    - _login.validations is defined
+  block:
+    - name: Log into {{ _login.host }} cluster 
+      k8s_auth:
+        host: "{{ _login.host }}"
+        username: "{{ _login.username }}"
+        password: "{{ _login.password }}"
+        validate_certs: false
+      register: _r_auth_cluster
+      retries: 240
+      delay: 15
+      until:
+      - _r_auth_cluster.k8s_auth.api_key is defined
+
+    - name: set cluster auth variables
+      set_fact:
+        _ocp_application_validation_cluster_login_host: "{{ _r_auth_cluster.k8s_auth.host }}"
+        _ocp_application_validation_cluster_login_username: "{{ _r_auth_cluster.k8s_auth.username }}"
+        _ocp_application_validation_cluster_login_api_key: "{{ _r_auth_cluster.k8s_auth.api_key }}"
+
+- name: running validations
+  when: _login.validations is defined
+  vars:
+    findme:
+      - ./testaments/{{ _validate.kind }}.yml
+      - ./testaments/universal.yml
+  include_tasks: "{{ lookup('first_found', findme) }}"
+  loop: "{{ _login.validations }}"
+  loop_control:
+    loop_var: _validate

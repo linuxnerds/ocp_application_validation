@@ -7,21 +7,26 @@ tmp_kubeconfig: "{{ tmp_dir }}/.kube/config"
 
 
 ocp_application_validation_list:
-  - cluster_name: prod
-    host:
-    username:
-    password:
-    types:
+  - cluster:
+      name: prod
+      host:
+      username:
+      password:
+    validations:
       - kind: Route
         name: openshift-gitops-server
         namespace: openshift-gitops
         retries:
         delay: 
 
-
-  - cluster_name: dev
-    host:
-    username:
-    password:
-    types:
-      - name: route
+  - cluster:
+      name: dev
+      host:
+      username:
+      password:
+    validations:
+      - kind: Route
+        name: openshift-gitops-server
+        namespace: openshift-gitops
+        retries:
+        delay: 
