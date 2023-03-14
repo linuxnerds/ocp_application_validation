@@ -12,8 +12,9 @@
   register: _r_validate
   retries: "{{ _validate.retries | default(60) }}"
   delay: "{{ _validate.delay | default(5) }}"
-  until: "{% if _validate.conditions is defined %}{{  _validate.conditions  }}
-           {% else %}_r_validate.resources | length > 0{% endif %}"
+  until:
+    - _r_validate.resources | length > 0
+    - _r_validate.resources[0].status.phase == "Ready"   
 
   
 
