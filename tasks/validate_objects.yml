@@ -6,7 +6,7 @@
     - _login.cluster.password is defined
     - _login.validations is defined
   block:
-    - name: Log into {{ _login.cluster.host }} cluster 
+    - name: Log into {{ _login.cluster.name | d(_login.cluster.host) }} cluster 
       k8s_auth:
         host: "{{ _login.cluster.host }}"
         username: "{{ _login.cluster.username }}"
@@ -34,7 +34,7 @@
     - _login.cluster.password is not defined
     - _login.validations is defined
   debug:
-    msg: "Log into {{ _login.cluster.host }} cluster"
+    msg: "Log into {{ _login.cluster.name | d('local') }} cluster"
 
 - name: running validations
   when: _login.validations is defined
