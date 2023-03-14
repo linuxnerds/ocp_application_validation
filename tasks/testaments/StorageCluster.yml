@@ -1,5 +1,5 @@
 ---
-- name: "[{{ _validate.kind }}]=> checking {{ _validate.name | d('') }}"
+- name: "[{{ _login.cluster.name |d('Cluster')}}][{{ _validate.kind }}]=> checking {{ _validate.name | d('') }}"
   k8s_info:
     host: "{{ _ocp_application_validation_cluster_login_host | default(omit) }}"
     username: "{{ _ocp_application_validation_cluster_login_username | default(omit) }}"
