@@ -1,33 +1,48 @@
 ---
-become_override: false
-ocp_username: user-redhat.com
-silent: false
-tmp_dir: /tmp/validation_contexts
-tmp_kubeconfig: "{{ tmp_dir }}/.kube/config"
-
 
 ocp_application_validation_list:
+  - cluster: 
+      name: hub
+      host: https://api.hub.example.com:6443
+      username: username
+      password: password
+    validations: 
+      - kind: Route
+        name: openshift-gitops-server
+        namespace: openshift-gitops
+        retries:
+        delay:
+      - kind: StorageCluster
+        name: ocs-storagecluster
+        namespace: openshift-storage
+      - kind: NooBaa
+        api_version: noobaa.io/v1alpha1
+        name: noobaa
+        namespace: openshift-storage
+
   - cluster:
       name: prod
-      host:
-      username:
-      password:
-    validations:
+      host: https://api.prod.example.com:6443
+      username: username
+      password: password
+    validations: 
       - kind: Route
         name: openshift-gitops-server
         namespace: openshift-gitops
-        retries:
-        delay: 
-
+           
   - cluster:
       name: dev
-      host:
-      username:
-      password:
-    validations:
+      host: https://api.dev.example.com:6443
+      username: username
+      password: password
+    validations: 
       - kind: Route
         name: openshift-gitops-server
         namespace: openshift-gitops
-        retries:
-        delay: 
 
+  - cluster:
+      name: local
+    validations: 
+      - kind: Route
+        name: openshift-gitops-server
+        namespace: openshift-gitops

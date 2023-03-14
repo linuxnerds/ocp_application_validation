@@ -1,1 +1,0 @@
-# ocp_application_validation

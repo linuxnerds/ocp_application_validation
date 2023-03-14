@@ -1,0 +1,58 @@
+# ocp_application_validation
+
+.Example
+[source,txtinfo]
+----
+---
+- hosts: localhost
+  tasks:
+    - debug: 
+        msg: "Test 1"
+
+    - include_role: 
+        name: ocp_application_validation
+      vars:
+        ocp_application_validation_list:
+          - cluster:
+              name: hub
+              host: https://api.hub.example.com:6443
+              username: username
+              password: password
+            validations:
+             - kind: StorageCluster
+               name: ocs-storagecluster
+               namespace: openshift-storage
+             - kind: NooBaa
+               api_version: noobaa.io/v1alpha1
+               name: noobaa
+               namespace: openshift-storage
+       
+    - debug: 
+        msg: "Test 2"
+
+    - include_role: 
+        name: ocp_application_validation
+      vars:
+        ocp_application_validation_list:
+          - validations:
+              - kind: Route
+                name: openshift-gitops-server
+                namespace: openshift-gitops
+
+    - debug: 
+        msg: "Test 3"
+
+    - include_role: 
+        name: ocp_application_validation
+      vars:
+        ocp_application_validation_list:
+          - cluster:
+              name: dev
+              host: https://api.dev.example.com:6443
+              username: username
+              password: password
+            validations:
+              - kind: Route
+                name: openshift-gitops-server
+                namespace: openshift-gitops
+----
