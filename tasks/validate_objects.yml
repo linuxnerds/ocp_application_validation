@@ -1,5 +1,5 @@
 ---
-- name: login to cluster
+- name: using auth to log into cluster
   when:
     - _login.cluster.host is defined
     - _login.cluster.username is defined
@@ -23,6 +23,18 @@
         _ocp_application_validation_cluster_login_host: "{{ _r_auth_cluster.k8s_auth.host }}"
         _ocp_application_validation_cluster_login_username: "{{ _r_auth_cluster.k8s_auth.username }}"
         _ocp_application_validation_cluster_login_api_key: "{{ _r_auth_cluster.k8s_auth.api_key }}"
+
+    - debug:
+        msg: "Log into {{ _login.cluster.host }} cluster"
+
+- name: using local .kube/config to log into cluster
+  when:
+    - _login.cluster.host is not defined
+    - _login.cluster.username is not defined
+    - _login.cluster.password is not defined
+    - _login.validations is defined
+  debug:
+    msg: "Log into {{ _login.cluster.host }} cluster"
 
 - name: running validations
   when: _login.validations is defined
