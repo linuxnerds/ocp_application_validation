@@ -12,9 +12,15 @@ ocp_application_validation_list:
         namespace: openshift-gitops
         retries:
         delay:
+        user:
+        password:
+        force_basic_auth:
+        status_code:
+        
       - kind: StorageCluster
         name: ocs-storagecluster
         namespace: openshift-storage
+
       - kind: NooBaa
         api_version: noobaa.io/v1alpha1
         name: noobaa
