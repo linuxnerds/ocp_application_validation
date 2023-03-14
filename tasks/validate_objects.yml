@@ -6,7 +6,7 @@
     - _login.cluster.password is defined
     - _login.validations is defined
   block:
-    - name: Log into {{ _login.host }} cluster 
+    - name: Log into {{ _login.cluster.host }} cluster 
       k8s_auth:
         host: "{{ _login.host }}"
         username: "{{ _login.username }}"

@@ -30,3 +30,4 @@ ocp_application_validation_list:
         namespace: openshift-gitops
         retries:
         delay: 
+
