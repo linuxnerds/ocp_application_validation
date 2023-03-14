@@ -6,6 +6,10 @@
     - _login.cluster.password is defined
     - _login.validations is defined
   block:
+    - name: set cluster auth variables
+      debug:
+        msg: "Log into {{ _ocp_application_validation_cluster_login_host }} cluster"
+
     - name: Log into {{ _login.cluster.name | d(_login.cluster.host) }} cluster 
       k8s_auth:
         host: "{{ _login.cluster.host }}"
@@ -18,15 +22,6 @@
       until:
       - _r_auth_cluster.k8s_auth.api_key is defined
 
-    - name: set cluster auth variables
-      set_fact:
-        _ocp_application_validation_cluster_login_host: "{{ _r_auth_cluster.k8s_auth.host }}"
-        _ocp_application_validation_cluster_login_username: "{{ _r_auth_cluster.k8s_auth.username }}"
-        _ocp_application_validation_cluster_login_api_key: "{{ _r_auth_cluster.k8s_auth.api_key }}"
-
-    - debug:
-        msg: "Log into {{ _login.cluster.host }} cluster"
-
 - name: using local .kube/config to log into cluster
   when:
     - _login.cluster.host is not defined
@@ -35,6 +30,7 @@
     - _login.validations is defined
   debug:
     msg: "Log into {{ _login.cluster.name | d('local') }} cluster"
+  
 
 - name: running validations
   when: _login.validations is defined
