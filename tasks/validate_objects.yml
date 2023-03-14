@@ -8,7 +8,7 @@
   block:
     - name: set cluster auth variables
       debug:
-        msg: "Log into {{ _ocp_application_validation_cluster_login_host }} cluster"
+        msg: "Log into {{ _login.cluster.name | default(_login.cluster.host) }} cluster"
 
     - name: Log into {{ _login.cluster.name | d(_login.cluster.host) }} cluster 
       k8s_auth:
