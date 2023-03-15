@@ -12,4 +12,22 @@
   register: _r_validate_universal
   retries: "{{ _validate.retries | default(60) }}"
   delay: "{{ _validate.delay | default(5) }}"
-  until: _r_validate_universal.resources | length > 0
+  until: 
+{% if _validate.conditions is defined %}
+  {{ _validate.conditions | to_yaml(indent=4) }}
+{% else %}
+   {{ '- _r_validate_universal.resources | length > 0' | to_yaml(indent=4) }}
+{% endif %}
+
+{% if _validate.kind == "Route" %}
+- name: "[{{ _login.cluster.name |d('Cluster')}}][{{ _validate.kind }}]=> checking {{ _validate.name | d('') }} URL status"
+  uri:
+    url: "{{ _validate.port | default(_r_validate_universal.resources.0.spec.port.targetPort) }}://{{ _r_validate_universal.resources.0.spec.host }}"
+    method: GET
+    user: "{{ _validate.user |default(omit) }}"
+    password: "{{ _validate.password |default(omit) }}"
+    force_basic_auth: "{{ _validate.force_basic_auth |default(omit) }}"
+    return_content: true
+    validate_certs: false
+    status_code: "{{ _validate.status_code |default(200) }}"
+{% endif %}
