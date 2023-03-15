@@ -1,4 +1,5 @@
 ---
+ocp_application_validation_file_path: /tmp/validations/
 
 ocp_application_validation_list:
   - cluster: 
