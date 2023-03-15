@@ -6,8 +6,12 @@
   set_fact:
     _validation_file:  "{{ lookup('first_found', findme) }}"
   
-- set_fact:
+- name: set validation directory path
+  set_fact:
     _ocp_application_validation_cluster_file_path: "{{ocp_application_validation_file_path}}/{{_login.cluster.name|d('local')}}"
+
+- name: set tasks file name
+  set_fact:
     _ocp_application_validation_cluster_task_file_path: "{{_ocp_application_validation_cluster_file_path}}/{{_validate.kind}}-{{_validate.name|d('default')}}.yml"
 
 - name: create validation dir
