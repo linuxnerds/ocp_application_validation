@@ -14,9 +14,9 @@
 - name: create validation tasks file
   copy:
     content: "{{ lookup('template', _validation_file) }}"
-    dest: >-
-      {{ ocp_application_validation_file_path }}/{{ _login.cluster.name |
-      d('local') }}/{{ _validate.kind }}-{{ _validate.name | d('default') }}.yml"
+    dest: "{{ ocp_application_validation_file_path }}/{{
+      _login.cluster.name | d('local') }}/{{ 
+      _validate.kind }}-{{ _validate.name | d('default') }}.yml"
   delegate_to: localhost
      
 - name: running validations
