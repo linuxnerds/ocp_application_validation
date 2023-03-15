@@ -1,0 +1,17 @@
+---
+- set_fact:
+    object_template:  "{{ lookup('first_found', findme) }}"
+  vars:
+    findme:
+      - ./testaments/{{ _validate.kind }}.yml
+      - ./testaments/universal.yml
+
+- copy:
+    content: "{{ lookup('template', object_template) }}"
+    dest: /tmp/{{ _validate.kind }}.yml
+  delegate_to: localhost
+     
+- name: running validations
+  when: _login.validations is defined
+  #include_tasks: "{{ lookup('template', 'universal_test.yml.j2') | from_yaml |to_nice_yaml }}"
+  include_tasks: /tmp/{{ _validate.kind }}.yml
