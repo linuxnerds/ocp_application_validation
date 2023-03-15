@@ -19,7 +19,7 @@
 {% if _validate.kind == "Route" %}
 - name: "[{{ _login.cluster.name |d('Cluster')}}][{{ _validate.kind }}]=> checking {{ _validate.name | d('') }} URL status"
   uri:
-    url: "{{ _validate.port | default(_r_validate_universal.resources.0.spec.port.targetPort) }}://{{ _r_validate_universal.resources.0.spec.host }}"
+    url: "{% raw %}{{ _validate.port | default(_r_validate_universal.resources.0.spec.port.targetPort) }}://{{ _r_validate_universal.resources.0.spec.host }}{% endraw %}"
     method: GET
     user: "{{ _validate.user |default(omit) }}"
     password: "{{ _validate.password |default(omit) }}"
