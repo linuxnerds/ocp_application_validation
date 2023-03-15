@@ -6,23 +6,23 @@
   set_fact:
     _validation_file:  "{{ lookup('first_found', findme) }}"
   
-- name: create testaments dir
+- set_fact:
+    _ocp_application_validation_cluster_file_path: "{{ocp_application_validation_file_path}}/{{_login.cluster.name|d('local')}}"
+    _ocp_application_validation_cluster_task_file_path: "{{_ocp_application_validation_cluster_file_path}}/{{_validate.kind}}-{{_validate.name|d('default')}}.yml"
+
+- name: create validation dir
   file:
-    path: "{{ ocp_application_validation_file_path }}/{ _login.cluster.name | d('local') }}"
+    path: "{{ _ocp_application_validation_cluster_file_path }}"
     state: directory
+    recurse: true
 
 - name: create validation tasks file
   copy:
     content: "{{ lookup('template', _validation_file) }}"
-    dest: "{{ ocp_application_validation_file_path }}/{{
-      _login.cluster.name | d('local') }}/{{ 
-      _validate.kind }}-{{ _validate.name | d('default') }}.yml"
+    dest: "{{ _ocp_application_validation_cluster_task_file_path }}"
   delegate_to: localhost
      
-- name: running validations
+- name: execute validations
   when: _login.validations is defined
   #include_tasks: "{{ lookup('template', 'universal_test.yml.j2') | from_yaml |to_nice_yaml }}"
-  include_tasks: >-
-    {{ ocp_application_validation_file_path }}/{{ 
-    _login.cluster.name | d('local') }}/{{
-    _validate.kind }}-{{ _validate.name | d('default') }}.yml"
+  include_tasks: "{{ _ocp_application_validation_cluster_task_file_path }}"
