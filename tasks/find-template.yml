@@ -1,5 +1,6 @@
 ---
-- vars:
+- name: find validation template file
+  vars:
     findme:
       - ./templates/{{ _validate.kind }}.yml.j2
       - ./templates/universal.yml.j2
