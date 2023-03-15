@@ -6,27 +6,19 @@
   set_fact:
     _validation_file:  "{{ lookup('first_found', findme) }}"
   
-- name: set validation directory path
-  set_fact:
-    _ocp_application_validation_cluster_file_path: "{{ocp_application_validation_file_path}}/{{_login.cluster.name|d('local')}}"
-
-- name: set tasks file name
-  set_fact:
-    _ocp_application_validation_cluster_task_file_path: "{{_ocp_application_validation_cluster_file_path}}/{{_validate.kind}}-{{_validate.name|d('default')}}.yml"
-
 - name: create validation dir
   file:
-    path: "{{ _ocp_application_validation_cluster_file_path }}"
+    path: "{{ ocp_application_validation_file_path }}"
     state: directory
     recurse: true
 
 - name: create validation tasks file
   copy:
     content: "{{ lookup('template', _validation_file) }}"
-    dest: "{{ _ocp_application_validation_cluster_task_file_path }}"
+    dest: "{{ ocp_application_validation_file_path }}/{{_validate.kind}}.yml"
   delegate_to: localhost
      
 - name: execute validations
   when: _login.validations is defined
   #include_tasks: "{{ lookup('template', 'universal_test.yml.j2') | from_yaml |to_nice_yaml }}"
-  include_tasks: "{{ _ocp_application_validation_cluster_task_file_path }}"
+  include_tasks: "{{ ocp_application_validation_file_path }}/{{_validate.kind}}.yml"
