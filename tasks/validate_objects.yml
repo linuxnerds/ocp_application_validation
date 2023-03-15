@@ -32,13 +32,19 @@
     msg: "Log into {{ _login.cluster.name | d('local') }} cluster"
   
 
+# - name: running validations
+#   when: _login.validations is defined
+#   vars:
+#     findme:
+#       - ./testaments/{{ _validate.kind }}.yml
+#       - ./testaments/universal.yml
+#   include_tasks: "{{ lookup('first_found', findme) }}"
+#   loop: "{{ _login.validations }}"
+#   loop_control:
+#     loop_var: _validate
 - name: running validations
   when: _login.validations is defined
-  vars:
-    findme:
-      - ./testaments/{{ _validate.kind }}.yml
-      - ./testaments/universal.yml
-  include_tasks: "{{ lookup('first_found', findme) }}"
+  include_tasks: "{{ lookup('template', 'universal_test.yml.j2') }}"
   loop: "{{ _login.validations }}"
   loop_control:
     loop_var: _validate
