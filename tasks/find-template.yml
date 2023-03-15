@@ -8,16 +8,21 @@
   
 - name: create testaments dir
   file:
-    path: "{{ ocp_application_validation_file_path }}"
+    path: "{{ ocp_application_validation_file_path }}/{ _login.cluster.name | d('local') }}"
     state: directory
 
 - name: create validation tasks file
   copy:
     content: "{{ lookup('template', _validation_file) }}"
-    dest: "{{ ocp_application_validation_file_path }}/{{ _validate.kind }}.yml"
+    dest: >-
+      {{ ocp_application_validation_file_path }}/{{ _login.cluster.name |
+      d('local') }}/{{ _validate.kind }}-{{ _validate.name | d('default') }}.yml"
   delegate_to: localhost
      
 - name: running validations
   when: _login.validations is defined
   #include_tasks: "{{ lookup('template', 'universal_test.yml.j2') | from_yaml |to_nice_yaml }}"
-  include_tasks: "{{ ocp_application_validation_file_path }}/{{ _validate.kind }}.yml"
+  include_tasks: >-
+    {{ ocp_application_validation_file_path }}/{{ 
+    _login.cluster.name | d('local') }}/{{
+    _validate.kind }}-{{ _validate.name | d('default') }}.yml"
