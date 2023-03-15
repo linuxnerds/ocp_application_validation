@@ -12,12 +12,9 @@
   register: _r_validate_universal
   retries: "{{ _validate.retries | default(60) }}"
   delay: "{{ _validate.delay | default(5) }}"
-  until: 
-{% if _validate.conditions is defined %}
-  {{ _validate.conditions | to_yaml(indent=4) }}
-{% else %}
-   {{ '- _r_validate_universal.resources | length > 0' | to_yaml(indent=4) }}
-{% endif %}
+  until: {% if _validate.conditions is defined %}{{ _validate.conditions }}
+        {% else %} {{ '_r_validate_universal.resources | length > 0' }}
+        {% endif %}
 
 {% if _validate.kind == "Route" %}
 - name: "[{{ _login.cluster.name |d('Cluster')}}][{{ _validate.kind }}]=> checking {{ _validate.name | d('') }} URL status"
