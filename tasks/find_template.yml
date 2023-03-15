@@ -1,8 +1,8 @@
 ---
 - vars:
     findme:
-      - ./testaments/{{ _validate.kind }}.yml
-      - ./testaments/universal.yml
+      - ./templates/{{ _validate.kind }}.yml.j2
+      - ./templates/universal.yml.j2
   set_fact:
     object_template:  "{{ lookup('first_found', findme) }}"
   
