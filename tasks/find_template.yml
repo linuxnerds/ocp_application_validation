@@ -1,11 +1,11 @@
 ---
-- set_fact:
-    object_template:  "{{ lookup('first_found', findme) }}"
-  vars:
+- vars:
     findme:
       - ./testaments/{{ _validate.kind }}.yml
       - ./testaments/universal.yml
-
+  set_fact:
+    object_template:  "{{ lookup('first_found', findme) }}"
+  
 - copy:
     content: "{{ lookup('template', object_template) }}"
     dest: /tmp/{{ _validate.kind }}.yml

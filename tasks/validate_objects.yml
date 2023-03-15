@@ -36,15 +36,18 @@
 #   when: _login.validations is defined
 #   vars:
 #     findme:
-#       - ./testaments/{{ _validate.kind }}.yml
-#       - ./testaments/universal.yml
-#   include_tasks: "{{ lookup('first_found', findme) }}"
+#       - ./templates/{{ _validate.kind }}.yml.j2
+#       - ./templates/universal.yml.j2
+#   set_fact:
+#     object_template: "{{ lookup('first_found', findme) }}"
 #   loop: "{{ _login.validations }}"
 #   loop_control:
 #     loop_var: _validate
+
 - name: running validations
   when: _login.validations is defined
-  include_tasks: "{{ lookup('template', 'universal_test.yml.j2') }}"
+  include_tasks: find_template.yml
   loop: "{{ _login.validations }}"
   loop_control:
     loop_var: _validate
+
