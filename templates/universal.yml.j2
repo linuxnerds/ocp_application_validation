@@ -14,9 +14,14 @@
   retries: "{{ _validate.retries | default(60) }}"
   delay: "{{ _validate.delay | default(5) }}"
 {% endraw %}
-  until: {% if _validate.conditions is defined %}{{ _validate.conditions }}
-        {% else %} {{ '_r_validate_universal.resources | length > 0' }}
-        {% endif %}
+  until:
+{% if _validate.conditionss is defined %}
+{% for condition in  _validate.conditionss %}
+    - {{ condition }}
+{% endfor %}
+{% else %}
+    - {{ '_r_validate_universal.resources | length > 0' }}
+{% endif %}
 
 {% if _validate.kind == "Route" %}
 {% raw %}
@@ -32,3 +37,12 @@
     status_code: "{{ _validate.status_code |default(200) }}"
 {% endraw %}
 {% endif %}
+
+{% raw %}
+- name: validation result
+  debug:
+    msg: >-
+       ( {{ _validate.kind }} validation on {{ _login.cluster.name |d('')}} cluster : PASS )=>
+       [{{ _validate }}]
+       
+{% endraw %}
