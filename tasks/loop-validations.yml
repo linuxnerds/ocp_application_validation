@@ -6,7 +6,7 @@
     - _login.cluster.password is defined
     - _login.validations is defined
   block:
-    - name: set cluster auth variables
+    - name: Print
       debug:
         msg: "Log into {{ _login.cluster.name | default(_login.cluster.host) }} cluster"
 
@@ -30,15 +30,11 @@
     - _login.validations is defined
   debug:
     msg: "Log into {{ _login.cluster.name | d('local') }} cluster"
-  
 
-- name: running validations
+- name: find template and run validations
   when: _login.validations is defined
-  vars:
-    findme:
-      - ./testaments/{{ _validate.kind }}.yml
-      - ./testaments/universal.yml
-  include_tasks: "{{ lookup('first_found', findme) }}"
+  include_tasks: ./find-template.yml
   loop: "{{ _login.validations }}"
   loop_control:
     loop_var: _validate
+

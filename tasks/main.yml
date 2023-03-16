@@ -1,6 +1,6 @@
 ---
 - name: run ocp application validation tasks
-  include_tasks: ./validate_objects.yml
+  include_tasks: ./loop-validations.yml
   loop: "{{ ocp_application_validation_list }}"
   loop_control:
     loop_var: _login

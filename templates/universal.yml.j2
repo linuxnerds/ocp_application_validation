@@ -1,4 +1,5 @@
 ---
+{% raw %}
 - name: "[{{ _login.cluster.name |d('Cluster')}}][{{ _validate.kind }}]=> checking {{ _validate.name | d('') }}"
   k8s_info:
     host: "{{ _r_auth_cluster.k8s_auth.host | default(omit) }}"
@@ -6,17 +7,22 @@
     api_key: "{{ _r_auth_cluster.k8s_auth.api_key | default(omit) }}"
     validate_certs: false
     api_version: "{{ _validate.api_version| default(omit) }}"
-    kind: Route
+    kind: "{{ _validate.kind }}"
     name: "{{ _validate.name | default(omit) }}"
     namespace: "{{ _validate.namespace | default(omit) }}"
-  register: _r_validate_route
+  register: _r_validate_universal
   retries: "{{ _validate.retries | default(60) }}"
   delay: "{{ _validate.delay | default(5) }}"
-  until: _r_validate_route.resources | length > 0
+{% endraw %}
+  until: {% if _validate.conditions is defined %}{{ _validate.conditions }}
+        {% else %} {{ '_r_validate_universal.resources | length > 0' }}
+        {% endif %}
 
+{% if _validate.kind == "Route" %}
+{% raw %}
 - name: "[{{ _login.cluster.name |d('Cluster')}}][{{ _validate.kind }}]=> checking {{ _validate.name | d('') }} URL status"
   uri:
-    url: "{{ _validate.port | default(_r_validate_route.resources.0.spec.port.targetPort) }}://{{ _r_validate_route.resources.0.spec.host }}"
+    url: "{{ _validate.port | default(_r_validate_universal.resources.0.spec.port.targetPort) }}://{{ _r_validate_universal.resources.0.spec.host }}"
     method: GET
     user: "{{ _validate.user |default(omit) }}"
     password: "{{ _validate.password |default(omit) }}"
@@ -24,3 +30,5 @@
     return_content: true
     validate_certs: false
     status_code: "{{ _validate.status_code |default(200) }}"
+{% endraw %}
+{% endif %}

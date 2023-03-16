@@ -1,0 +1,20 @@
+---
+- name: create validation dir
+  file:
+    path: "{{ ocp_application_validation_file_path }}"
+    state: directory
+    recurse: true
+
+- name: create validation tasks file from template
+  vars:
+    findme:
+      - ./templates/{{ _validate.kind }}.yml.j2
+      - ./templates/universal.yml.j2
+  template:
+    src: "{{ lookup('first_found', findme)}}"
+    dest: "{{ ocp_application_validation_file_path }}/{{_validate.kind}}.yml"
+  delegate_to: localhost
+     
+- name: execute validations
+  when: _login.validations is defined
+  include_tasks: "{{ ocp_application_validation_file_path }}/{{_validate.kind}}.yml"
