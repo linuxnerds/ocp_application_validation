@@ -5,11 +5,16 @@
   block:
     - name: create validation dir
       file:
-        path: "{{ ocp_application_validation_file_path }}"
+        path: "{{ _dir }}"
         state: directory
         recurse: true
         mode: 0777
-   
+      loop:
+        - "{{ ocp_application_validation_result_path }}"
+        - "{{ ocp_application_validation_file_path }}"
+      loop_control:
+        loop_var: _dir
+
     - name: create validation tasks file from template
       vars:
         findme:

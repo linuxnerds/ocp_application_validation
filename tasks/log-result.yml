@@ -17,5 +17,5 @@
       lineinfile:
         create: yes
         insertafter: EOF
-        path: "{{ ocp_application_validation_file_path }}/validation_result.yml"
+        path: "{{ ocp_application_validation_file_path }}/{{ ocp_application_validation_result_path }}/result.yml"
         line: "{{ '%-10s  %-s' | format(_log_prefix, _log_message) }}"

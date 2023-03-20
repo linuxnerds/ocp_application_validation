@@ -1,5 +1,6 @@
 ---
-ocp_application_validation_file_path: /tmp/validations/{{ guid[:5] | d('common') }}/
+ocp_application_validation_file_path: /tmp/validations/{{ guid[:5] | d('common') }}/testaments
+ocp_application_validation_result_path: /tmp/validations/{{ guid[:5] | d('common') }}/results
 
 ocp_application_validation_list:
   - cluster: 
