@@ -69,26 +69,28 @@
     status_code: "{{ _validate.status_code |default(200) }}"
   register: _r_validate_universal_route
 
-- name: "Success - set fact"
-  when: not _r_validate_universal_route.failed | bool
-  set_fact:
-    success: true                                                                                                                                                                          
-      
-- name: "No Success - set fact"
-  when: _r_validate_universal_route.failed | bool
-  set_fact:
-    success: false
+- when: not _r_validate_universal_route.skipped
+  block:
+    - name: "Success - set fact"
+      when: not _r_validate_universal_route.failed | bool
+      set_fact:
+        success: true                                                                                                                                                                          
+          
+    - name: "No Success - set fact"
+      when: _r_validate_universal_route.failed | bool
+      set_fact:
+        success: false
 {% endraw %}
 
 {% if _validate.onfail | default('') != "ignore" %}
 {% raw %}
-- name: "url validation result"
-  assert:
-    that: not _r_validate_universal_route.failed | bool
-    fail_msg: >-
-      [ {{ _validate.name | d('') + '-' }} url validation on {{ _login.cluster.name |d('')}} cluster : FAIL ]
-    success_msg: >-
-      [ {{ _validate.name | d('') + '-' }} url validation on {{ _login.cluster.name |d('')}} cluster : PASS ]
+    - name: "url validation result"
+      assert:
+        that: not _r_validate_universal_route.failed | bool
+        fail_msg: >-
+          [ {{ _validate.name | d('') + '-' }} url validation on {{ _login.cluster.name |d('')}} cluster : FAIL ]
+        success_msg: >-
+          [ {{ _validate.name | d('') + '-' }} url validation on {{ _login.cluster.name |d('')}} cluster : PASS ]
 {% endraw %}
 {% endif %}
 {% endif %}
