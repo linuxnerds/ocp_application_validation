@@ -16,16 +16,33 @@
   delay: "{{ _validate.delay | default(5) }}"
 {% endraw %}
   until:
-{% if (_validation.operator is defined) and (_validate.conditions is not defined) %}
+{% if _validate.conditions is defined %}
+  {% for condition in  _validate.conditions %}
+    - {{ condition }}
+  {% endfor %}
+{% elif _validate.kind == 'ManagedCluster' %}
+    - _r_validate_universal.resources is defined
+    - _r_validate_universal.resources | length | int > 0
+    - _r_validate_universal.resources[0].status is defined
+    - _r_validate_universal.resources[0].status.conditions is defined
+    - ( _r_validate_universal.resources[0].status | to_json | from_json | 
+      json_query('conditions[?type == `ManagedClusterConditionAvailable`].status') | join ) == "True"
+{% elif _validate.kind == 'StorageCluster' %}
+    - _r_validate_universal.resources | length > 0
+    - _r_validate_universal.resources[0].status.phase == "Ready"
+{% elif _validate.kind == 'Kafka' or _validate.kind == 'Kafka' %}
+    - _r_validate_universal.resources | length > 0
+    - _r_validate_universal.resources[0].status.conditions[0].type == "Ready"
+{% elif _validate.kind == 'InstallPlan' and _validate.operator is defined %}
     - _r_validate_universal.resources | length > 0
     - (_r_validate_universal.resources |  to_json | from_json |
-      json_query('[?starts_with(spec.clusterServiceVersionNames[0], `{{_validation.operator}}`)].status.phase') |join ) == "Complete"
-{% elif _validate.conditions is defined %}
-{% for condition in  _validate.conditions %}
-    - {{ condition }}
-{% endfor %}
+      json_query('[?starts_with(spec.clusterServiceVersionNames[0], `{{_validate.operator}}`)].status.phase') |join ) == "Complete"
+{% elif _validate.kind == 'PipelineRun' and _validate.pipeline is defined and _validate.state is defined %}
+    - _r_validate_universal.resources | length > 0
+    - (_r_validate_universal.resources|  to_json | from_json | 
+      json_query('[?spec.pipelineRef.name == `{{_validate.pipeline}}`].status.conditions[0].reason') | join ) == "{{_validate.state}}"
 {% else %}
-    - {{ '_r_validate_universal.resources | length > 0' }}
+    - _r_validate_universal.resources | length > 0
 {% endif %}
 
 {% raw %}
@@ -41,7 +58,7 @@
 
 - name: "set log message"
   set_fact:
-    log_message: "{{ _validate.name | d('') + '-' }} {{ _validate.kind }} validation on {{ _login.cluster.name |d('')}} cluster"
+    log_message: "{{ _validate.name | d(_validate.operator)| d(_validate.pipeline)  |d('') }} - {{ _validate.kind }} validation on {{ _login.cluster.name |d('')}} cluster"
 {% endraw %}
 
 {% if _validate.onfail | default('') != "ignore" %}
@@ -49,10 +66,8 @@
 - name: "{{ _validate.kind }} resource validation result"
   assert:
     that: not _r_validate_universal.failed | bool
-    fail_msg: >-
-      [ {{ log_message }} : FAIL ]
-    success_msg: >-
-      [ {{ log_message }} : PASS ]
+    fail_msg: "[ {{ log_message }} : FAIL ]"
+    success_msg: "[ {{ log_message }} : PASS ]"
 {% endraw %}
 {% endif %}
 
@@ -84,6 +99,10 @@
       when: _r_validate_universal_route.failed | bool
       set_fact:
         success: false
+
+    - name: "set log message"
+      set_fact:
+        log_message: "{{ _validate.name | d('') }} - url validation on {{ _login.cluster.name |d('')}} cluster"
 {% endraw %}
 
 {% if _validate.onfail | default('') != "ignore" %}
@@ -91,10 +110,8 @@
     - name: "url validation result"
       assert:
         that: not _r_validate_universal_route.failed | bool
-        fail_msg: >-
-          [ {{ _validate.name | d('') + '-' }} url validation on {{ _login.cluster.name |d('')}} cluster : FAIL ]
-        success_msg: >-
-          [ {{ _validate.name | d('') + '-' }} url validation on {{ _login.cluster.name |d('')}} cluster : PASS ]
+        fail_msg: "[ {{ log_message }} : FAIL ]"
+        success_msg: "[ {{ log_message }} : PASS ]"
 {% endraw %}
 {% endif %}
 {% endif %}
