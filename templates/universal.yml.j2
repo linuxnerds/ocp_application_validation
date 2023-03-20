@@ -28,12 +28,17 @@
 - name: "Success - set fact"
   when: not _r_validate_universal.failed | bool
   set_fact:
-    success: true                                                                                                                                                                          
+    success: true
+
       
 - name: "No Success - set fact"
   when: _r_validate_universal.failed | bool
   set_fact:
     success: false
+
+- name: "set log message"
+  set_fact:
+    log_message: "{{ _validate.name | d('') + '-' }} {{ _validate.kind }} validation on {{ _login.cluster.name |d('')}} cluster"
 {% endraw %}
 
 {% if _validate.onfail | default('') != "ignore" %}
@@ -42,9 +47,9 @@
   assert:
     that: not _r_validate_universal.failed | bool
     fail_msg: >-
-      [ {{ _validate.name | d('') + '-' }} {{ _validate.kind }} validation on {{ _login.cluster.name |d('')}} cluster : FAIL ]
+      [ {{ log_message }} : FAIL ]
     success_msg: >-
-      [ {{ _validate.name | d('') + '-' }} {{ _validate.kind }} validation on {{ _login.cluster.name |d('')}} cluster : PASS ]
+      [ {{ log_message }} : PASS ]
 {% endraw %}
 {% endif %}
 
