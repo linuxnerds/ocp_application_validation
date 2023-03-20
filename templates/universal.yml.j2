@@ -16,21 +16,24 @@
   delay: "{{ _validate.delay | default(5) }}"
 {% endraw %}
   until:
-{% if _validate.conditions is defined %}
+{% if (_validation.operator is defined) and (_validate.conditions is not defined) %}
+    - _r_validate_universal.resources | length > 0
+    - (_r_validate_universal.resources |  to_json | from_json |
+      json_query('[?starts_with(spec.clusterServiceVersionNames[0], `{{_validation.operator}}`)].status.phase') |join ) == "Complete"
+{% elif _validate.conditions is defined %}
 {% for condition in  _validate.conditions %}
     - {{ condition }}
 {% endfor %}
 {% else %}
     - {{ '_r_validate_universal.resources | length > 0' }}
 {% endif %}
-{% raw %}
 
+{% raw %}
 - name: "Success - set fact"
   when: not _r_validate_universal.failed | bool
   set_fact:
     success: true
 
-      
 - name: "No Success - set fact"
   when: _r_validate_universal.failed | bool
   set_fact:
@@ -53,6 +56,7 @@
 {% endraw %}
 {% endif %}
 
+# This part is just for Route kind
 {% if _validate.kind == "Route" %}
 {% raw %}
 - name: "[{{ _login.cluster.name |d('Cluster')}}][{{ _validate.kind }}]=> checking {{ _validate.name | d('') }} URL status"
