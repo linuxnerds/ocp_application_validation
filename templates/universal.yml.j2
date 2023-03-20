@@ -15,8 +15,8 @@
   delay: "{{ _validate.delay | default(5) }}"
 {% endraw %}
   until:
-{% if _validate.conditionss is defined %}
-{% for condition in  _validate.conditionss %}
+{% if _validate.conditions is defined %}
+{% for condition in  _validate.conditions %}
     - {{ condition }}
 {% endfor %}
 {% else %}
