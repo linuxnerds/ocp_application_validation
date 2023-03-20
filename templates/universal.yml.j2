@@ -61,13 +61,19 @@
     log_message: "{{ _validate.name | d(_validate.operator)| d(_validate.pipeline)  |d('') }} - {{ _validate.kind }} validation on {{ _login.cluster.name |d('')}} cluster"
 {% endraw %}
 
-{% if _validate.onfail | default('') != "ignore" %}
+{% if _validate.onfail | default('fail') != "ignore" %}
 {% raw %}
 - name: "{{ _validate.kind }} resource validation result"
   assert:
     that: not _r_validate_universal.failed | bool
     fail_msg: "[ {{ log_message }} : FAIL ]"
     success_msg: "[ {{ log_message }} : PASS ]"
+{% endraw %}
+{% else %}
+{% raw %}
+- name: "{{ _validate.kind }} resource validation result"
+  debug:
+    msg: "[ {{ log_message }} : {%if success%}PASS{%else}FAIL{%endif} ]"
 {% endraw %}
 {% endif %}
 
@@ -105,13 +111,19 @@
         log_message: "{{ _validate.name | d('') }} - url validation on {{ _login.cluster.name |d('')}} cluster"
 {% endraw %}
 
-{% if _validate.onfail | default('') != "ignore" %}
+{% if _validate.onfail | default('fail') != "ignore" %}
 {% raw %}
     - name: "url validation result"
       assert:
         that: not _r_validate_universal_route.failed | bool
         fail_msg: "[ {{ log_message }} : FAIL ]"
         success_msg: "[ {{ log_message }} : PASS ]"
+{% endraw %}
+{% else %}
+{% raw %}
+    - name: "{{ _validate.kind }} resource validation result"
+      debug:
+        msg: "[ {{ log_message }} : {%if success%}PASS{%else}FAIL{%endif} ]"
 {% endraw %}
 {% endif %}
 {% endif %}
