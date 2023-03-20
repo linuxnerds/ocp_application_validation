@@ -18,4 +18,4 @@
         create: yes
         insertafter: EOF
         path: "{{ ocp_application_validation_result_path }}/result.yml"
-        line: "{{ '%-10s %-10s %-s' | format(_log_prefix, ,_login.cluster.name|d('local'), _log_message) }}"
+        line: "{{ '%-10s %-10s %-s' | format(_log_prefix, _login.cluster.name|d('local'), _log_message) }}"
