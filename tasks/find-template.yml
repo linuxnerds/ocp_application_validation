@@ -23,3 +23,6 @@
 - name: execute validations
   when: _login.validations is defined
   include_tasks: "{{ ocp_application_validation_file_path }}/{{_validate.kind}}.yml"
+
+- name: logging result
+  include_tasks: log-result.yml
