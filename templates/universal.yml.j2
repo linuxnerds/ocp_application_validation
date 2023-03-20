@@ -73,7 +73,7 @@
 {% raw %}
 - name: "{{ _validate.kind }} resource validation result"
   debug:
-    msg: "[ {{ log_message }} : {%if success%}PASS{%else}FAIL{%endif} ]"
+    msg: "[ {{ log_message }} : {%if success%}PASS{%else%}FAIL{%endif%} ]"
 {% endraw %}
 {% endif %}
 
@@ -123,7 +123,7 @@
 {% raw %}
     - name: "{{ _validate.kind }} resource validation result"
       debug:
-        msg: "[ {{ log_message }} : {%if success%}PASS{%else}FAIL{%endif} ]"
+        msg: "[ {{ log_message }} : {%if success%}PASS{%else%}FAIL{%endif%} ]"
 {% endraw %}
 {% endif %}
 {% endif %}
