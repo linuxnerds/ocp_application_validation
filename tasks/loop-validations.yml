@@ -40,6 +40,7 @@
     index_var: _v_index
 
 - name: Remove testaments
+  when: ocp_application_validation_remove_testaments | bool
   file:
     path: "{{ ocp_application_validation_file_path }}"
     state: absent
