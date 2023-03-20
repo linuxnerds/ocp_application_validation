@@ -37,4 +37,5 @@
   loop: "{{ _login.validations }}"
   loop_control:
     loop_var: _validate
+    index_var: _v_index
 
