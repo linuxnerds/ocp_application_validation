@@ -4,3 +4,4 @@
   loop: "{{ ocp_application_validation_list }}"
   loop_control:
     loop_var: _login
+    index_var: _c_index
