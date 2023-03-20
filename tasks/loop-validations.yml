@@ -42,6 +42,5 @@
 - name: Remove testaments
   file:
     path: "{{ ocp_application_validation_file_path }}"
-    recurse: true
     state: absent
   delegate_to: localhost
