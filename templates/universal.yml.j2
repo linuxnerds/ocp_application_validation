@@ -69,7 +69,7 @@
     status_code: "{{ _validate.status_code |default(200) }}"
   register: _r_validate_universal_route
 
-- when: not _r_validate_universal_route.skipped
+- when: not _r_validate_universal_route.skipped | default(false) |bool
   block:
     - name: "Success - set fact"
       when: not _r_validate_universal_route.failed | bool
