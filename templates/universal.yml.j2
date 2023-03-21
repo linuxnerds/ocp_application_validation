@@ -5,15 +5,15 @@
 {% if _validate.api_version is defined %}
     api_version: "{{ _validate.api_version }}"
 {% elif _validate.kind == 'ManagedCluster' %}
-    api_key: cluster.open-cluster-management.io/v1
+    api_version: cluster.open-cluster-management.io/v1
 {% elif _validate.kind == 'NooBaa' %}
-    api_key: noobaa.io/v1alpha1
+    api_version: noobaa.io/v1alpha1
 {% elif _validate.kind == 'Pipeline' or _validate.kind == 'PipelineRun' %}
-    api_key: tekton.dev/v1beta1
+    api_version: tekton.dev/v1beta1
 {% elif _validate.kind == 'InstallPlan' %}
-    api_key: operators.coreos.com/v1alpha1
+    api_version: operators.coreos.com/v1alpha1
 {% elif _validate.kind == 'Kafka' or _validate.kind == 'KafkaTopic' %}
-    api_key: kafka.strimzi.io/v1beta2
+    api_version: kafka.strimzi.io/v1beta2
 {% endif %}
     {% raw %}
     host: "{{ _r_auth_cluster.k8s_auth.host | default(omit) }}"
