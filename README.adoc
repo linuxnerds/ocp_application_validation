@@ -41,9 +41,25 @@ This role is used k8s_info module to validate OpenShift resources.
 
 .2+^.^| validations | list | na | Contains nested dictionary of k8s object validation
   3.+a|
-[cols=",,",options="header"]
+[%autowidth,cols=",,",options="header"]
 !===
 ! Parameters ! Type ! Comments
+! kind ! string ! Comments
+! name ! string ! Comments
+! namespace ! string ! Comments
+! api_version ! string ! Comments
+! operator ! string ! Comments
+! pipeline ! string ! Comments
+! state ! string ! Comments
+! retries ! string ! Comments
+! delay ! string ! Comments
+! conditions ! list ! Comments
+! onfail ! string ! Comments
+! user ! string ! Comments
+! password ! string ! Comments
+! force_basic_auth ! string ! Comments
+! status_code ! integer ! Comments
+! port ! string ! Comments
 !===
 
 |====
