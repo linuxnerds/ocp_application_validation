@@ -1,20 +1,32 @@
 ---
-{% raw %}
 - name: "[{{ _login.cluster.name |d('Cluster')}}][{{ _validate.kind }}]=> checking {{ _validate.name | d('') }}"
   ignore_errors: true
   k8s_info:
+{% if _validate.api_version is defined %}
+    api_version: "{{ _validate.api_version }}"
+{% elif _validate.kind == 'ManagedCluster' %}
+    api_key: cluster.open-cluster-management.io/v1
+{% elif _validate.kind == 'NooBaa' %}
+    api_key: noobaa.io/v1alpha1
+{% elif _validate.kind == 'Pipeline' or _validate.kind == 'PipelineRun' %}
+    api_key: tekton.dev/v1beta1
+{% elif _validate.kind == 'InstallPlan' %}
+    api_key: operators.coreos.com/v1alpha1
+{% elif _validate.kind == 'Kafka' or _validate.kind == 'KafkaTopic' %}
+    api_key: kafka.strimzi.io/v1beta2
+{% endif %}
+    {% raw %}
     host: "{{ _r_auth_cluster.k8s_auth.host | default(omit) }}"
     username: "{{ _r_auth_cluster.k8s_auth.username | default(omit) }}"
     api_key: "{{ _r_auth_cluster.k8s_auth.api_key | default(omit) }}"
+    {% endraw -%}
     validate_certs: false
-    api_version: "{{ _validate.api_version| default(omit) }}"
     kind: "{{ _validate.kind }}"
     name: "{{ _validate.name | default(omit) }}"
     namespace: "{{ _validate.namespace | default(omit) }}"
   register: _r_validate_universal
   retries: "{{ _validate.retries | default(60) }}"
   delay: "{{ _validate.delay | default(5) }}"
-{% endraw %}
   until:
 {% if _validate.conditions is defined %}
   {% for condition in  _validate.conditions %}
@@ -45,7 +57,6 @@
     - _r_validate_universal.resources | length > 0
 {% endif %}
 
-{% raw %}
 - name: "Success - set fact"
   when: not _r_validate_universal.failed | bool
   set_fact:
@@ -59,32 +70,30 @@
 - name: "set log message"
   set_fact:
     log_message: "{{ _validate.name | d(_validate.operator)| d(_validate.pipeline)  |d('') }} - {{ _validate.kind }} validation on {{ _login.cluster.name |d('')}} cluster"
-{% endraw %}
 
 {% if _login.cluster.onfail | default('fail') == "ignore" or _validate.onfail | default('fail') == "ignore" %}
-{% raw %}
 - name: "{{ _validate.kind }} resource validation result"
   debug:
-    msg: "[ {{ log_message }} : {%if success%}PASS{%else%}FAIL{%endif%} ]"
-{% endraw %}
+    msg: {% raw %}"[ {{ log_message }} : {%if success%}PASS{%else%}FAIL{%endif%} ]"{% endraw %}
 {% else %}
-{% raw %}
 - name: "{{ _validate.kind }} resource validation result"
   assert:
     that: not _r_validate_universal.failed | bool
+    {% raw %}
     fail_msg: "[ {{ log_message }} : FAIL ]"
     success_msg: "[ {{ log_message }} : PASS ]"
-{% endraw %}
+    {% endraw %}
 {% endif %}
 
-# This part is just for Route kind
+{# This part is just for Route kind #}
 {% if _validate.kind == "Route" %}
-{% raw %}
 - name: "[{{ _login.cluster.name |d('Cluster')}}][{{ _validate.kind }}]=> checking {{ _validate.name | d('') }} URL status"
   when: not _r_validate_universal.failed | bool
   ignore_errors: true
   uri:
+    {% raw %}
     url: "{{ _validate.port | default(_r_validate_universal.resources.0.spec.port.targetPort) }}://{{ _r_validate_universal.resources.0.spec.host }}"
+    {% endraw -%}
     method: GET
     user: "{{ _validate.user |default(omit) }}"
     password: "{{ _validate.password |default(omit) }}"
@@ -109,22 +118,19 @@
     - name: "set log message"
       set_fact:
         log_message: "{{ _validate.name | d('') }} - url validation on {{ _login.cluster.name |d('')}} cluster"
-{% endraw %}
 
 {% if _login.cluster.onfail | default('fail') == "ignore" or _validate.onfail | default('fail') == "ignore" %}
-{% raw %}
     - name: "{{ _validate.kind }} resource validation result"
       debug:
-        msg: "[ {{ log_message }} : {%if success%}PASS{%else%}FAIL{%endif%} ]"
-{% endraw %}
+        msg: {% raw %}"[ {{ log_message }} : {%if success%}PASS{%else%}FAIL{%endif%} ]"{% endraw %}
 {% else %}
-{% raw %}
     - name: "url validation result"
       assert:
         that: not _r_validate_universal_route.failed | bool
+        {% raw %}
         fail_msg: "[ {{ log_message }} : FAIL ]"
         success_msg: "[ {{ log_message }} : PASS ]"
-{% endraw %}
+        {% endraw %}
 {% endif %}
 {% endif %}
 
