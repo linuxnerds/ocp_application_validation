@@ -43,7 +43,9 @@ The role will be moved to a collection sitting in one of our repositories and ca
 ! host ! url ! OpenShfit console api
 ! username ! string ! OpenShfit cluster username
 ! password ! string ! OpenShfit cluster password
-! onfail ! string ! Value=ignore, It ignores failed validation tasks and continues to validate other in the list. This applies to all of the validations defined under the cluster.
+! onfail ! string ! Value=ignore, It ignores failed validation tasks and 
+continues to validate other in the list. 
+This applies to all of the validations defined under the cluster.
 !===
 
 .2+^.^| validations | list | na | Contains nested dictionary of k8s object validation
