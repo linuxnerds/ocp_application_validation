@@ -15,7 +15,7 @@ This role is used k8s_info module to validate OpenShift resources.
 
 == Parameters
 
-[%autowidth,cols="^.^,^.^,^.^,",options="header"]
+[%autowidth,cols="^.^,^.^a,^.^,^.^",options="header"]
 |===
 | Parameters | Type | Default | Comments
 
@@ -30,7 +30,7 @@ This role is used k8s_info module to validate OpenShift resources.
 .2+^.^| cluster | dict | na | dictionary of cluster parameters
 
   3.+a|
-[cols=",,",options="header"]
+[cols=",,^.^",options="header"]
 !===
 ! Parameters ! Type ! Comments
 ! name ! string ! Cluster name
@@ -42,7 +42,7 @@ This role is used k8s_info module to validate OpenShift resources.
 
 .2+^.^| validations | list | na | Contains nested dictionary of k8s object validation
   3.+a|
-[%autowidth,cols=",,",options="header"]
+[%autowidth,cols=",,^.^",options="header"]
 !===
 ! Parameters ! Type ! Comments
 ! kind ! string ! Comments
