@@ -1,8 +1,49 @@
-# ocp_application_validation
 
-.Example
-[source,txtinfo]
+= ocp_application_validation
+
+This role is used k8s_info module to validate OpenShift resources.
+
+
+== Synopsis
+* Use the k8s_info ansible module to perform read operations on K8s objects.
+* Authenticate using either a config file, or password.
+
+
+== Requirements
+* ansible >= 2.9 
+* kubernetese.core collection
+
+== Parameters
+[cols="20%,10%,10%,60%"]
+|===
+| Parameters | Type | Default | Comments
+
+| ocp_application_validation_file_path | path | '/tmp/validations/{{ guid[:5] \| d('common') }}/testaments' | to set directory path where validation task files will be created
+
+| ocp_application_validation_remove_testaments | bool | true | to remove validation directory path at the end of execution
+
+| ocp_application_validation_result_path | path | '/tmp/validations/{{ guid[:5] \| d('common') }}/' | path where results.yml will be created and file will contain validation run pass and fail. 
+
+| ocp_application_validation_list | list | na | List of parameters for validation
+
+.2+| cluster | dict | na | dictionary of cluster parameters
+
+ 3.+a|
+[cols="2,1"]
+!===
+! a ! b 
+! c ! d
+
+
+!===
+
+|====
+
+== Examples
+
+[source,yaml]
 ----
+
 ---
 - hosts: localhost
   tasks:
@@ -56,3 +97,10 @@
                 name: openshift-gitops-server
                 namespace: openshift-gitops
 ----
+
+
+== Authors
+* Mitesh Sharma (mitsharm@redhat.com)
+* Tyrell Reddy (treddy@redhat.com)
+* Prakhar Srivastava (psrivast@redhat.com)
+* Ritesh Shah (rshah@redhat.com)
