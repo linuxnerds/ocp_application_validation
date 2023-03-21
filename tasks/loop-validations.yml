@@ -40,8 +40,9 @@
     index_var: _v_index
 
 - name: Remove testaments
+  delegate_to: localhost
+  become: false  
   when: ocp_application_validation_remove_testaments | bool
   file:
     path: "{{ ocp_application_validation_file_path }}"
     state: absent
-  delegate_to: localhost
