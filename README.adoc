@@ -14,7 +14,7 @@ This role is used k8s_info module to validate OpenShift resources.
 * kubernetese.core collection
 
 == Parameters
-[cols="20%,10%,10%,60%"]
+[cols="^.^20%,^.^10%,^.^10%,60%",option=hearder]
 |===
 | Parameters | Type | Default | Comments
 
@@ -26,16 +26,20 @@ This role is used k8s_info module to validate OpenShift resources.
 
 | ocp_application_validation_list | list | na | List of parameters for validation
 
-.2+| cluster | dict | na | dictionary of cluster parameters
+.2+^.^| cluster | dict | na | dictionary of cluster parameters
 
  3.+a|
-[cols="2,1"]
+[cols=",,",option=hearder]
 !===
-! a ! b 
-! c ! d
-
-
+! Parameters ! Type ! Comments
+! name ! string ! Cluster name
+! host ! url ! OpenShfit console api
+! username ! string ! OpenShfit cluster username
+! password ! string ! OpenShfit cluster password
+! onfail ! string ! Value=ignore, It ignores failed validation tasks and continues to validate other in the list. This applies to all of the validations defined under the cluster.
 !===
+
+| validations | list | na | Contains nested dictionary of k8s object validation
 
 |====
 
