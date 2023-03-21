@@ -14,7 +14,7 @@ This role is used k8s_info module to validate OpenShift resources.
 * kubernetese.core collection
 
 == Parameters
-[%autowidth,cols="^.^20%,^.^10%,^.^10%,60%",options="header"]
+[%autowidth,cols="^.^,^.^,^.^,",options="header"]
 |===
 | Parameters | Type | Default | Comments
 
