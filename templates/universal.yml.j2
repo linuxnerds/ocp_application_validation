@@ -1,33 +1,99 @@
 ---
-{% raw %}
 - name: "[{{ _login.cluster.name |d('Cluster')}}][{{ _validate.kind }}]=> checking {{ _validate.name | d('') }}"
+  ignore_errors: true
   k8s_info:
+{% if _validate.api_version is defined %}
+    api_version: "{{ _validate.api_version }}"
+{% elif _validate.kind == 'ManagedCluster' %}
+    api_key: cluster.open-cluster-management.io/v1
+{% elif _validate.kind == 'NooBaa' %}
+    api_key: noobaa.io/v1alpha1
+{% elif _validate.kind == 'Pipeline' or _validate.kind == 'PipelineRun' %}
+    api_key: tekton.dev/v1beta1
+{% elif _validate.kind == 'InstallPlan' %}
+    api_key: operators.coreos.com/v1alpha1
+{% elif _validate.kind == 'Kafka' or _validate.kind == 'KafkaTopic' %}
+    api_key: kafka.strimzi.io/v1beta2
+{% endif %}
+    {% raw %}
     host: "{{ _r_auth_cluster.k8s_auth.host | default(omit) }}"
     username: "{{ _r_auth_cluster.k8s_auth.username | default(omit) }}"
     api_key: "{{ _r_auth_cluster.k8s_auth.api_key | default(omit) }}"
+    {% endraw -%}
     validate_certs: false
-    api_version: "{{ _validate.api_version| default(omit) }}"
     kind: "{{ _validate.kind }}"
     name: "{{ _validate.name | default(omit) }}"
     namespace: "{{ _validate.namespace | default(omit) }}"
   register: _r_validate_universal
   retries: "{{ _validate.retries | default(60) }}"
   delay: "{{ _validate.delay | default(5) }}"
-{% endraw %}
   until:
 {% if _validate.conditions is defined %}
-{% for condition in  _validate.conditions %}
+  {% for condition in  _validate.conditions %}
     - {{ condition }}
-{% endfor %}
+  {% endfor %}
+{% elif _validate.kind == 'ManagedCluster' %}
+    - _r_validate_universal.resources is defined
+    - _r_validate_universal.resources | length | int > 0
+    - _r_validate_universal.resources[0].status is defined
+    - _r_validate_universal.resources[0].status.conditions is defined
+    - ( _r_validate_universal.resources[0].status | to_json | from_json | 
+      json_query('conditions[?type == `ManagedClusterConditionAvailable`].status') | join ) == "True"
+{% elif _validate.kind == 'StorageCluster' %}
+    - _r_validate_universal.resources | length > 0
+    - _r_validate_universal.resources[0].status.phase == "Ready"
+{% elif _validate.kind == 'Kafka' or _validate.kind == 'Kafka' %}
+    - _r_validate_universal.resources | length > 0
+    - _r_validate_universal.resources[0].status.conditions[0].type == "Ready"
+{% elif _validate.kind == 'InstallPlan' and _validate.operator is defined %}
+    - _r_validate_universal.resources | length > 0
+    - (_r_validate_universal.resources |  to_json | from_json |
+      json_query('[?starts_with(spec.clusterServiceVersionNames[0], `{{_validate.operator}}`)].status.phase') |join ) == "Complete"
+{% elif _validate.kind == 'PipelineRun' and _validate.pipeline is defined and _validate.state is defined %}
+    - _r_validate_universal.resources | length > 0
+    - (_r_validate_universal.resources|  to_json | from_json | 
+      json_query('[?spec.pipelineRef.name == `{{_validate.pipeline}}`].status.conditions[0].reason') | join ) == "{{_validate.state}}"
 {% else %}
-    - {{ '_r_validate_universal.resources | length > 0' }}
+    - _r_validate_universal.resources | length > 0
 {% endif %}
 
+- name: "Success - set fact"
+  when: not _r_validate_universal.failed | bool
+  set_fact:
+    success: true
+
+- name: "No Success - set fact"
+  when: _r_validate_universal.failed | bool
+  set_fact:
+    success: false
+
+- name: "set log message"
+  set_fact:
+    log_message: "{{ _validate.name | d(_validate.operator)| d(_validate.pipeline)  |d('') }} - {{ _validate.kind }} validation on {{ _login.cluster.name |d('')}} cluster"
+
+{% if _login.cluster.onfail | default('fail') == "ignore" or _validate.onfail | default('fail') == "ignore" %}
+- name: "{{ _validate.kind }} resource validation result"
+  debug:
+    msg: {% raw %}"[ {{ log_message }} : {%if success%}PASS{%else%}FAIL{%endif%} ]"{% endraw %}
+{% else %}
+- name: "{{ _validate.kind }} resource validation result"
+  assert:
+    that: not _r_validate_universal.failed | bool
+    {% raw %}
+    fail_msg: "[ {{ log_message }} : FAIL ]"
+    success_msg: "[ {{ log_message }} : PASS ]"
+    {% endraw %}
+{% endif %}
+
+{# This part is just for Route kind #}
 {% if _validate.kind == "Route" %}
-{% raw %}
 - name: "[{{ _login.cluster.name |d('Cluster')}}][{{ _validate.kind }}]=> checking {{ _validate.name | d('') }} URL status"
+  when: not _r_validate_universal.failed | bool
+  ignore_errors: true
   uri:
+    {% raw %}
     url: "{{ _validate.port | default(_r_validate_universal.resources.0.spec.port.targetPort) }}://{{ _r_validate_universal.resources.0.spec.host }}"
+    {% endraw -%}
     method: GET
     user: "{{ _validate.user |default(omit) }}"
     password: "{{ _validate.password |default(omit) }}"
@@ -35,14 +101,36 @@
     return_content: true
     validate_certs: false
     status_code: "{{ _validate.status_code |default(200) }}"
-{% endraw %}
+  register: _r_validate_universal_route
+
+- when: not _r_validate_universal_route.skipped | default(false) |bool
+  block:
+    - name: "Success - set fact"
+      when: not _r_validate_universal_route.failed | bool
+      set_fact:
+        success: true                                                                                                                                                                          
+          
+    - name: "No Success - set fact"
+      when: _r_validate_universal_route.failed | bool
+      set_fact:
+        success: false
+
+    - name: "set log message"
+      set_fact:
+        log_message: "{{ _validate.name | d('') }} - url validation on {{ _login.cluster.name |d('')}} cluster"
+
+{% if _login.cluster.onfail | default('fail') == "ignore" or _validate.onfail | default('fail') == "ignore" %}
+    - name: "{{ _validate.kind }} resource validation result"
+      debug:
+        msg: {% raw %}"[ {{ log_message }} : {%if success%}PASS{%else%}FAIL{%endif%} ]"{% endraw %}
+{% else %}
+    - name: "url validation result"
+      assert:
+        that: not _r_validate_universal_route.failed | bool
+        {% raw %}
+        fail_msg: "[ {{ log_message }} : FAIL ]"
+        success_msg: "[ {{ log_message }} : PASS ]"
+        {% endraw %}
+{% endif %}
 {% endif %}
 
-{% raw %}
-- name: validation result
-  debug:
-    msg: >-
-       ( {{ _validate.kind }} validation on {{ _login.cluster.name |d('')}} cluster : PASS )=>
-       [{{ _validate }}]
-       
-{% endraw %}

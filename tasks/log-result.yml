@@ -1,0 +1,21 @@
+- name: Logging validation PASS or FAIL
+  delegate_to: localhost
+  block:
+    - name: pass message
+      when: success | bool
+      set_fact:
+        _log_prefix: "[ PASS ]"
+        _log_message: "{{ log_message }}"
+
+    - name: fail message
+      when: not success | bool
+      set_fact:
+        _log_prefix: "[ FAIL ]"
+        _log_message: "{{ log_message }}"
+
+    - name: Appends validation result
+      lineinfile:
+        create: yes
+        insertafter: EOF
+        path: "{{ ocp_application_validation_result_path }}/result.yml"
+        line: "{{ '%-10s %-10s %-s' | format(_log_prefix, _login.cluster.name|d('local'), _log_message) }}"

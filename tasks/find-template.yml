@@ -5,11 +5,16 @@
   block:
     - name: create validation dir
       file:
-        path: "{{ ocp_application_validation_file_path }}"
+        path: "{{ _dir }}"
         state: directory
         recurse: true
         mode: 0777
-   
+      loop:
+        - "{{ ocp_application_validation_result_path }}"
+        - "{{ ocp_application_validation_file_path }}"
+      loop_control:
+        loop_var: _dir
+
     - name: create validation tasks file from template
       vars:
         findme:
@@ -17,9 +22,12 @@
           - ./templates/universal.yml.j2
       template:
         src: "{{ lookup('first_found', findme)}}"
-        dest: "{{ ocp_application_validation_file_path }}/{{_validate.kind}}.yml"
+        dest: "{{ ocp_application_validation_file_path }}/{{ _c_index }}_{{ _v_index }}-{{_validate.kind}}.yml"
         mode: 0777
    
 - name: execute validations
   when: _login.validations is defined
-  include_tasks: "{{ ocp_application_validation_file_path }}/{{_validate.kind}}.yml"
+  include_tasks: "{{ ocp_application_validation_file_path }}/{{ _c_index }}_{{ _v_index }}-{{_validate.kind}}.yml"
+
+- name: logging result
+  include_tasks: log-result.yml
