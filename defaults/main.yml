@@ -1,61 +1,44 @@
 ---
+# Path for validation task files
 ocp_application_validation_file_path: /tmp/validations/{{ guid[:5] | d('common') }}/testaments
-ocp_application_validation_result_path: /tmp/validations/{{ guid[:5] | d('common') }}/
+# Boolean to remmove validation directory at the end
 ocp_application_validation_remove_testaments: true
 
+# Path for result directory
+ocp_application_validation_result_path: /tmp/validations/{{ guid[:5] | d('common') }}/
+
+# Example list of cluster and validation
 ocp_application_validation_list:
   - cluster: 
-      name: hub
-      host: https://api.hub.example.com:6443
-      username: username
-      password: password
-    validations: 
-      - kind: Route
-        name: openshift-gitops-server
-        namespace: openshift-gitops
-        retries:
-        delay:
-        user:
-        password:
-        force_basic_auth:
-        status_code:
-        conditions:
-        
-      - kind: StorageCluster
-        name: ocs-storagecluster
-        namespace: openshift-storage
-        conditions:
-          - _r_validate_universal.resources | length > 0
-          - _r_validate_universal.resources[0].status.phase == "Ready"
- 
-      - kind: NooBaa
-        api_version: noobaa.io/v1alpha1
-        name: noobaa
-        namespace: openshift-storage
-
-  - cluster:
-      name: prod
-      host: https://api.prod.example.com:6443
-      username: username
-      password: password
-    validations: 
-      - kind: Route
-        name: openshift-gitops-server
-        namespace: openshift-gitops
-           
-  - cluster:
-      name: dev
-      host: https://api.dev.example.com:6443
-      username: username
-      password: password
-    validations: 
-      - kind: Route
-        name: openshift-gitops-server
-        namespace: openshift-gitops
-
-  - cluster:
       name: local
     validations: 
       - kind: Route
         name: openshift-gitops-server
         namespace: openshift-gitops
+        retries: 1
+
+##------------------------------------------##
+## Available options    
+##------------------------------------------##
+# ocp_application_validation_list:
+#   - cluster: 
+#       name: string
+#       host: url
+#       username: string
+#       password: string
+#       onfail: string
+#     validations: 
+#       - kind: string
+#         name: string
+#         namespace: string
+#         retries: integer
+#         delay: integer
+#         password: string
+#         force_basic_auth: string
+#         status_code: integer
+#         operator: string
+#         pipeline: string
+#         state: string
+#         port: string
+#         conditions: [list]
+#         onfail: string
