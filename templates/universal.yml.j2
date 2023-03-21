@@ -14,6 +14,8 @@
     api_version: operators.coreos.com/v1alpha1
 {% elif _validate.kind == 'Kafka' or _validate.kind == 'KafkaTopic' %}
     api_version: kafka.strimzi.io/v1beta2
+{% elif _validate.kind == 'ArgoCD' %}
+    api_version: argoproj.io/v1alpha1
 {% endif %}
     {% raw %}
     host: "{{ _r_auth_cluster.k8s_auth.host | default(omit) }}"
