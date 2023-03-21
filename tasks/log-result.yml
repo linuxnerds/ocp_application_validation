@@ -1,5 +1,6 @@
 - name: Logging validation PASS or FAIL
   delegate_to: localhost
+  become: false  
   block:
     - name: pass message
       when: success | bool
