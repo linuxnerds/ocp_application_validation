@@ -1,7 +1,13 @@
 
 = ocp_application_validation
 
-This role is used k8s_info module to validate OpenShift resources.
+This role is using k8s_info module to validate OpenShift resources. The role can be used as pattern to validate Catalog items based on Openshift for now. 
+
+The work is still in progress. We would like to make test cases for non OCP CI.
+
+The validations can be done for Gitops based installation of OCP resources or Ansible based installation.
+
+The role will be moved to a collection sitting in one of our repositories and can be called during CI Provisioning, FTL or Ops CI/CD process.
 
 
 == Synopsis
