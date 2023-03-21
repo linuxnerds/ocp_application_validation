@@ -45,22 +45,22 @@ This role is used k8s_info module to validate OpenShift resources.
 [%autowidth,cols="^.^,^.^,^.^",options="header"]
 !===
 ! Parameters ! Type ! Comments
-! kind ! string ! Comments
-! name ! string ! Comments
-! namespace ! string ! Comments
-! api_version ! string ! Comments
-! operator ! string ! Comments
-! pipeline ! string ! Comments
-! state ! string ! Comments
-! retries ! string ! Comments
-! delay ! string ! Comments
-! conditions ! list ! Comments
-! onfail ! string ! Comments
-! user ! string ! Comments
-! password ! string ! Comments
-! force_basic_auth ! string ! Comments
-! status_code ! integer ! Comments
-! port ! string ! Comments
+! kind ! string ! k8s object kind
+! name ! string ! name of the object
+! namespace ! string ! namespace where object lives
+! api_version ! string ! api_version for the kind
+! operator ! string ! name of the operator without version to check
+! pipeline ! string ! Name of the pipeline used for pipelinerun kind
+! state ! string ! state of the pipeline to check 
+! retries ! string ! retires for until loop
+! delay ! string ! delay for until loop
+! conditions ! list ! conditions to check 
+! onfail ! string ! ignore
+! user ! string ! user name for route 
+! password ! string ! password for route
+! force_basic_auth ! bool ! for route 
+! status_code ! integer ! status code for uri
+! port ! string ! port like http/https for uri
 !===
 |===
 
@@ -68,59 +68,42 @@ This role is used k8s_info module to validate OpenShift resources.
 
 [source,yaml]
 ----
-
----
-- hosts: localhost
-  tasks:
-    - debug: 
-        msg: "Test 1"
-
-    - include_role: 
-        name: ocp_application_validation
-      vars:
-        ocp_application_validation_list:
-          - cluster:
-              name: hub
-              host: https://api.hub.example.com:6443
-              username: username
-              password: password
-            validations:
-             - kind: StorageCluster
-               name: ocs-storagecluster
-               namespace: openshift-storage
-             - kind: NooBaa
-               api_version: noobaa.io/v1alpha1
-               name: noobaa
-               namespace: openshift-storage
+# Example-1
+ocp_application_validation_list:
+  - cluster:
+      name: hub
+      host: https://api.hub.example.com:6443
+      username: username
+      password: password
+    validations:
+      - kind: StorageCluster
+        name: ocs-storagecluster
+        namespace: openshift-storage
+      - kind: NooBaa
+        api_version: noobaa.io/v1alpha1
+        name: noobaa
+        namespace: openshift-storage
        
-    - debug: 
-        msg: "Test 2"
+# Example-2
+ocp_application_validation_list:
+  - cluster:
+      name: local
+    validations:
+      - kind: Route
+        name: openshift-gitops-server
+        namespace: openshift-gitops
 
-    - include_role: 
-        name: ocp_application_validation
-      vars:
-        ocp_application_validation_list:
-          - validations:
-              - kind: Route
-                name: openshift-gitops-server
-                namespace: openshift-gitops
-
-    - debug: 
-        msg: "Test 3"
-
-    - include_role: 
-        name: ocp_application_validation
-      vars:
-        ocp_application_validation_list:
-          - cluster:
-              name: dev
-              host: https://api.dev.example.com:6443
-              username: username
-              password: password
-            validations:
-              - kind: Route
-                name: openshift-gitops-server
-                namespace: openshift-gitops
+# Example-2
+ocp_application_validation_list:
+  - cluster:
+      name: dev
+      host: https://api.dev.example.com:6443
+      username: username
+      password: password
+    validations:
+      - kind: Route
+        name: openshift-gitops-server
+        namespace: openshift-gitops
 ----
 
 
