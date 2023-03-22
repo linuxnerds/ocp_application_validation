@@ -42,10 +42,15 @@
     - ( _r_validate_universal.resources[0].status | to_json | from_json | 
       json_query('conditions[?type == `ManagedClusterConditionAvailable`].status') | join ) == "True"
 {% elif _validate.kind == 'StorageCluster' %}
+    - _r_validate_universal.resources is defined
     - _r_validate_universal.resources | length > 0
+    - _r_validate_universal.resources[0].status is defined
+    - _r_validate_universal.resources[0].status.phase is defined
     - _r_validate_universal.resources[0].status.phase == "Ready"
 {% elif _validate.kind == 'Kafka' or _validate.kind == 'Kafka' %}
     - _r_validate_universal.resources | length > 0
+    - _r_validate_universal.resources[0].status.conditions is defined
+    - _r_validate_universal.resources[0].status.conditions[0].type is defined
     - _r_validate_universal.resources[0].status.conditions[0].type == "Ready"
 {% elif _validate.kind == 'InstallPlan' and _validate.operator is defined %}
     - _r_validate_universal.resources | length > 0
