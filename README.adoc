@@ -87,6 +87,14 @@ ocp_application_validation_list:
       - kind: StorageCluster
         name: ocs-storagecluster
         namespace: openshift-storage
+        retries: 120
+        delay: 10
+        conditions:
+          - _r_validate_universal.resources is defined
+          - _r_validate_universal.resources | length > 0
+          - _r_validate_universal.resources[0].status is defined
+          - _r_validate_universal.resources[0].status.phase is defined
+          - _r_validate_universal.resources[0].status.phase == "Ready"
       - kind: NooBaa
         api_version: noobaa.io/v1alpha1
         name: noobaa
