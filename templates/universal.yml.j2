@@ -55,7 +55,7 @@
 {% elif _validate.kind == 'InstallPlan' and _validate.operator is defined %}
     - _r_validate_universal.resources | length > 0
     - (_r_validate_universal.resources |  to_json | from_json |
-      json_query('[?starts_with(spec.clusterServiceVersionNames[0], `{{_validate.operator}}`)].status.phase') |join ) == "Complete"
+      json_query('[?starts_with(spec.clusterServiceVersionNames[0], `{{_validate.operator}}`)].status.phase') | first | join ) == "Complete"
 {% elif _validate.kind == 'PipelineRun' and _validate.pipeline is defined and _validate.state is defined %}
     - _r_validate_universal.resources | length > 0
     - (_r_validate_universal.resources|  to_json | from_json | 
