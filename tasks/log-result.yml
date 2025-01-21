@@ -5,18 +5,40 @@
     - name: pass message
       when: success | bool
       set_fact:
-        _log_prefix: "[ PASS ]"
+        _log_prefix: "PASS"
         _log_message: "{{ log_message }}"
 
     - name: fail message
       when: not success | bool
       set_fact:
-        _log_prefix: "[ FAIL ]"
+        _log_prefix: "FAIL"
         _log_message: "{{ log_message }}"
+
+    - name: Set formatted log message
+      set_fact:
+        _formatted_log_message_: "{{ '[%-4s] [%-12s] [%-s]' | format(_log_prefix, _login.cluster.name|d('local'), _log_message) }}"
 
     - name: Appends validation result
       lineinfile:
         create: yes
         insertafter: EOF
         path: "{{ ocp_application_validation_result_path }}/result.yml"
-        line: "{{ '%-10s %-10s %-s' | format(_log_prefix, _login.cluster.name|d('local'), _log_message) }}"
+        line: "{{ _formatted_log_message_ }}"
+
+    - name: gather agnosticd user data for validation message
+      set_fact:
+        _results_: "{{ lookup('agnosticd_user_data', 'ocp_application_validation_results') }}"
+
+    - name: Check agnosticd_user_data length
+      when: not  _results_ | length > 0
+      set_fact:
+         _results_: []
+
+    - name: Set Serial No
+      set_fact:
+        _srn_: "{{ _results_ | length  + 1 }}"
+
+    - name: Print and save results in agnostic_user_data
+      agnosticd_user_info:
+        data:
+          ocp_application_validation_results: "{{ _results_ +  ['[%2s] %s' | format(_srn_, _formatted_log_message_)] }}"
